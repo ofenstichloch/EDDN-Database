@@ -104,14 +104,9 @@ public class DataParser implements Runnable{
 		}
 
 	}
-
-	/**
-	 * Parses the jsonMessage field
-	 * @return MarketData-Object containing all market information 
-	 * @see    MarketData
-	 */
-	private MarketData parseJSON(){
-		return new MarketData();
+	
+	public int getPoolID(){
+		return this.poolID;
 	}
-
+	
 }
