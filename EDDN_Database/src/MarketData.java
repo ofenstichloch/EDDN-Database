@@ -7,11 +7,11 @@ public class MarketData {
 	public String systemName;
 	public String stationName;
 	public String itemName;
-	public int buyPrice;
-	public int supply;
+	public Integer buyPrice;
+	public Integer supply;
 	public String supplyLevel;
-	public int sellPrice;
-	public int demand;
+	public Integer sellPrice;
+	public Integer demand;
 	public String demandLevel;
 	public String timestamp;
 	
@@ -19,7 +19,22 @@ public class MarketData {
 		
 	}
 	
+	public void print(){
+		System.out.print(this.systemName + "/"+this.stationName+":"+this.itemName+"	" + this.sellPrice+ "	");
+		if(this.buyPrice != -1){
+			System.out.print(this.buyPrice);
+		}else{
+			System.out.print("Not sold");
+		}
+		System.out.println();
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @return true, if this object contains valid EDDN content
+	 */
 	public boolean validate(){
-		return false;
+		return true;
 	}
 }
