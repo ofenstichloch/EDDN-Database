@@ -32,7 +32,7 @@ public class DataParserThreadPool {
 	public void cleanup() {
 		for(int i=0;i<poolSize;i++){
 			poolSelectorLock.lock();
-			pool[i].running=false;
+			pool[i].stop();
 			pool[i].condition.signal();
 			poolSelectorLock.unlock();
 		}
@@ -44,11 +44,16 @@ public class DataParserThreadPool {
 	 * @param jsonMessage Decompressed EDDN data message
 	 */
 	public void sumbitJob(String jsonMessage){
-		//TODO While-loop to check if Thread is busy
+		//TODO Change busy-flag to semaphore
+		
+		
+		while(pool[oldestThread].isBusy()){
+			oldestThread = (oldestThread + 1) % poolSize;
+		}
 		poolSelectorLock.lock();
 			pool[oldestThread].jsonMessage = jsonMessage;
 			pool[oldestThread].condition.signal();
-			oldestThread = (oldestThread + 1) % poolSize;
+			oldestThread = 0;
 		poolSelectorLock.unlock();
 	}
 	

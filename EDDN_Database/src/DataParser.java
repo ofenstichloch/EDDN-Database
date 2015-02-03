@@ -8,10 +8,11 @@ import org.json.JSONTokener;
 public class DataParser implements Runnable{
 
 	private int poolID;
-	private Lock lock;
-	public Condition condition;
-	public boolean running;
+	private Lock lock;	
 	private DBWorker db;
+	private boolean busy;
+	public Condition condition;
+	private boolean running;
 	public String jsonMessage;
 	
 	
@@ -20,6 +21,7 @@ public class DataParser implements Runnable{
 		this.lock = DataParserThreadPool.poolSelectorLock;
 		this.condition = lock.newCondition();
 		this.running = true;
+		this.busy = false;
 		this.db = DBWorker.getObject();
 	}
 	
@@ -29,6 +31,7 @@ public class DataParser implements Runnable{
 	 * Receiving a signal starts parsing the message stored in the field jsonMessage.
 	 * 
 	 * TODO Give the resulting MarketData to DBWorker to save it.
+	 * TODO Change Busy-Flag to Semaphore
 	 */
 	public void run() {
 		while(this.running){
@@ -37,6 +40,7 @@ public class DataParser implements Runnable{
 			try {
 			
 				this.condition.await();
+				this.busy = true;
 			} catch (InterruptedException e) {
 			}
 			//Do the stuff below!
@@ -55,9 +59,17 @@ public class DataParser implements Runnable{
 					}
 				
 				}
-				
+				if(this.poolID==0){
+				try {
+					Thread.currentThread().sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}}
 				//clean message:
 				this.jsonMessage = null;
+				System.out.println("Worked "+this.poolID);
+				this.busy = false;
 			}
 			//===================
 			this.lock.unlock();
@@ -115,6 +127,14 @@ public class DataParser implements Runnable{
 	
 	public int getPoolID(){
 		return this.poolID;
+	}
+	
+	public void stop(){
+		this.running=false;
+	}
+	
+	public boolean isBusy(){
+		return this.busy;
 	}
 	
 }

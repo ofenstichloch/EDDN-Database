@@ -28,7 +28,7 @@ public class Main {
 		// Create DBWorker
 		DBWorker db = new DBWorker();
 		//Create DataParserThreadPool
-		DataParserThreadPool pool = new DataParserThreadPool(10);
+		DataParserThreadPool pool = new DataParserThreadPool(2);
 		System.out.println("Threadpool created: "+DataParserThreadPool.poolSize+" Threads");
 		
 		//Create EDDNListener
