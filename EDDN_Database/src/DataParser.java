@@ -10,7 +10,6 @@ public class DataParser implements Runnable{
 	private int poolID;
 	private Lock lock;	
 	private DBWorker db;
-	private boolean busy;
 	public Condition condition;
 	private boolean running;
 	public String jsonMessage;
@@ -21,7 +20,6 @@ public class DataParser implements Runnable{
 		this.lock = DataParserThreadPool.poolSelectorLock;
 		this.condition = lock.newCondition();
 		this.running = true;
-		this.busy = false;
 		this.db = DBWorker.getObject();
 	}
 	
@@ -40,7 +38,6 @@ public class DataParser implements Runnable{
 			try {
 			
 				this.condition.await();
-				this.busy = true;
 			} catch (InterruptedException e) {
 			}
 			//Do the stuff below!
@@ -69,7 +66,6 @@ public class DataParser implements Runnable{
 				//clean message:
 				this.jsonMessage = null;
 				System.out.println("Worked "+this.poolID);
-				this.busy = false;
 			}
 			//===================
 			this.lock.unlock();
@@ -132,9 +128,6 @@ public class DataParser implements Runnable{
 	public void stop(){
 		this.running=false;
 	}
-	
-	public boolean isBusy(){
-		return this.busy;
-	}
+
 	
 }

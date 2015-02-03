@@ -45,11 +45,7 @@ public class DataParserThreadPool {
 	 */
 	public void sumbitJob(String jsonMessage){
 		//TODO Change busy-flag to semaphore
-		
-		
-		while(pool[oldestThread].isBusy()){
-			oldestThread = (oldestThread + 1) % poolSize;
-		}
+
 		poolSelectorLock.lock();
 			pool[oldestThread].jsonMessage = jsonMessage;
 			pool[oldestThread].condition.signal();
