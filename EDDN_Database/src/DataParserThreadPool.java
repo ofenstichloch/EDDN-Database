@@ -44,6 +44,7 @@ public class DataParserThreadPool {
 	 * @param jsonMessage Decompressed EDDN data message
 	 */
 	public void sumbitJob(String jsonMessage){
+		//TODO While-loop to check if Thread is busy
 		poolSelectorLock.lock();
 			pool[oldestThread].jsonMessage = jsonMessage;
 			pool[oldestThread].condition.signal();

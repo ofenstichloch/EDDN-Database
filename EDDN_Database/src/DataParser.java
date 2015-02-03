@@ -11,7 +11,7 @@ public class DataParser implements Runnable{
 	private Lock lock;
 	public Condition condition;
 	public boolean running;
-	
+	private DBWorker db;
 	public String jsonMessage;
 	
 	
@@ -20,6 +20,7 @@ public class DataParser implements Runnable{
 		this.lock = DataParserThreadPool.poolSelectorLock;
 		this.condition = lock.newCondition();
 		this.running = true;
+		this.db = DBWorker.getObject();
 	}
 	
 	/**
@@ -43,8 +44,15 @@ public class DataParser implements Runnable{
 				MarketData data;
 				data = fillMarketData();
 				if(data!=null){
-					data.print();
+					//data.print();
 					//give to DBWorker queue
+					try {
+
+						db.test(data, this.poolID);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				
 				}
 				
