@@ -1,3 +1,4 @@
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
@@ -10,6 +11,7 @@ public class DataParser implements Runnable{
 	private int poolID;
 	private Lock lock;	
 	private DBWorker db;
+	public Semaphore busy;
 	public Condition condition;
 	private boolean running;
 	public String jsonMessage;
