@@ -1,6 +1,6 @@
 
 public class Main {
-
+//HI
 	/**
 	 * @author alexanderlandmesser
 	 *
@@ -25,12 +25,10 @@ public class Main {
 	 * @param args standard arguments
 	 */
 	public static void main(String[] args) {
-		// Create DBWorker
-		DBWorker db = new DBWorker();
 		//Create DataParserThreadPool
-		DataParserThreadPool pool = new DataParserThreadPool(2);
+		DataParserThreadPool pool = new DataParserThreadPool(10);
 		System.out.println("Threadpool created: "+DataParserThreadPool.poolSize+" Threads");
-		
+		// TODO Create DBWorker
 		//Create EDDNListener
 		EDDNListener listener = new EDDNListener();
 		Thread t = new Thread(listener);

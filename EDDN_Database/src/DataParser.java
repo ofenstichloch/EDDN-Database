@@ -1,4 +1,3 @@
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
@@ -9,20 +8,19 @@ import org.json.JSONTokener;
 public class DataParser implements Runnable{
 
 	private int poolID;
-	private Lock lock;	
-	private DBWorker db;
-	public Semaphore busy;
+	private Lock lock;
+	private DBWorker dbworker;
 	public Condition condition;
-	private boolean running;
+	public boolean running;
 	public String jsonMessage;
 	
 	
 	public DataParser(int id){
+		this.dbworker = new DBWorker();
 		this.poolID = id;
 		this.lock = DataParserThreadPool.poolSelectorLock;
 		this.condition = lock.newCondition();
 		this.running = true;
-		this.db = DBWorker.getObject();
 	}
 	
 	/**
@@ -31,7 +29,6 @@ public class DataParser implements Runnable{
 	 * Receiving a signal starts parsing the message stored in the field jsonMessage.
 	 * 
 	 * TODO Give the resulting MarketData to DBWorker to save it.
-	 * TODO Change Busy-Flag to Semaphore
 	 */
 	public void run() {
 		while(this.running){
@@ -47,27 +44,13 @@ public class DataParser implements Runnable{
 				MarketData data;
 				data = fillMarketData();
 				if(data!=null){
-					//data.print();
-					//give to DBWorker queue
-					try {
-
-						db.test(data, this.poolID);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					data.print();
+					this.dbworker.insertMarketData(data);
 				
 				}
-				if(this.poolID==0){
-				try {
-					Thread.currentThread().sleep(2000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}}
+				
 				//clean message:
 				this.jsonMessage = null;
-				System.out.println("Worked "+this.poolID);
 			}
 			//===================
 			this.lock.unlock();
@@ -122,14 +105,14 @@ public class DataParser implements Runnable{
 		}
 
 	}
-	
-	public int getPoolID(){
-		return this.poolID;
-	}
-	
-	public void stop(){
-		this.running=false;
+
+	/**
+	 * Parses the jsonMessage field
+	 * @return MarketData-Object containing all market information 
+	 * @see    MarketData
+	 */
+	private MarketData parseJSON(){
+		return new MarketData();
 	}
 
-	
 }
